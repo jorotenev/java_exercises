@@ -59,7 +59,7 @@ public class Conference_3 {
         try {
             // now, try to add as a reviewer an organiser, who's also an author of the article - should throw an Exception
             paper_2.changeStatus(organiser_and_author_3, "pass", Status.readyAccepted);
-            throw new InvalidStateException("Previous line should have thrown an exception.");
+            throw new Exception("Previous line should have thrown an exception.");
         } catch (Exception e) {
             if (e.getMessage().equals(Paper.MSG_ON_INVALID_REVIEWER)) {  // очаквана грешка
                 System.out.println("As expected, an organiser can't review his own article");
