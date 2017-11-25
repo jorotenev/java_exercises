@@ -7,9 +7,13 @@ import java.util.ArrayList;
 
 public class Bank_7 {
     public static void main(String[] args) {
+
         Bank b = new Bank("Barcleys", "London", "1");
 
         Account acc = new VIPAccount(b, "001");
+        Customer customer = new Customer("Pesho", "93");
+        customer.addAccount(acc);
+
         acc.reduceMoney(5000);
         System.out.println("New Balance: " + acc.getAmount());
     }
