@@ -12,6 +12,7 @@
  * - По този начин всички хора са автори
  */
 
+
 import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
@@ -30,7 +31,7 @@ public class Conference_3 {
         organiser_and_reviewer = new Organiser("Organizatorut Todor", "address", "phone", "pass");
         Organiser organiser_and_author_3 = new Organiser("Organizatorut Ignat", "address", "phone");
 
-        // правим solo paper добавяме reviewer, и същият reviewer одобрява статията
+        // make a solo paper; add a reviewer and the same reviewer accepts the article
         Paper paper_1 = null;
         try {
             paper_1 = new SoloPaper("Name of paper #1", "annotation", new String[]{"k1", "k2"},
@@ -42,13 +43,13 @@ public class Conference_3 {
             System.exit(1);
         }
 
-        // правима колективна публикация
+        // make a collaborative article
         Paper paper_2 = null;
         try {
-            // сменяме статуса на одобрен
+            // change stage to accepted
             paper_2 = new CollaborativePaper("Name paper #2", "annotation", new String[]{"k"},
                     "text", new Author[]{organiser_and_author_3, author_1, author_2}, new Integer[]{50, 30, 20});
-            // добавяме организатор като reviewer (ок, защото не е същия като авторите)
+            // add an organiser as a reviewer (ok, cuz he's not amongst the author)
             paper_2.changeStatus(organiser_and_reviewer, "pass");
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -56,12 +57,12 @@ public class Conference_3 {
         }
 
         try {
-            // сега опитваме да добавим организатора-автор също и като reviewer на публикацията си - не трябва да се получи
+            // now, try to add as a reviewer an organiser, who's also an author of the article - should throw an Exception
             paper_2.changeStatus(organiser_and_author_3, "pass", Status.readyAccepted);
-            throw new InvalidStateException("Не трябва да е възможно организатор да бъде редактор на своя статия.");
+            throw new InvalidStateException("Previous line should have thrown an exception.");
         } catch (Exception e) {
             if (e.getMessage().equals(Paper.MSG_ON_INVALID_REVIEWER)) {  // очаквана грешка
-                System.out.println("както се очаква, организатор не може да редактира своя статия");
+                System.out.println("As expected, an organiser can't review his own article");
             } else {
                 System.err.println(e.getMessage());
                 System.exit(1);
@@ -165,7 +166,7 @@ abstract class Paper {
 
     private String name;
     private String annotation;
-    private ArrayList<String> keywords = new ArrayList<>(); // array-like, но няма нужда да обявяваме предварително колко елемента ще има
+    private ArrayList<String> keywords = new ArrayList<>(); // array-like, but no need to know the size up front
     private String text;
     private Status status = Status.newStatus;
 
@@ -199,6 +200,7 @@ abstract class Paper {
      * Manages edges cases - if a paper is already accepted, and the new status is not accepted,
      * then reduce the number of publications of the authors.
      */
+
     public void changeStatus(Reviewer reviewer, String password, Status st) throws Exception {
         changeStatus(reviewer, password);
 
@@ -231,9 +233,11 @@ abstract class Paper {
 
     }
 
+
     /**
      * Verifies the password and ensures the reviewer is not among the authors of the paper
      */
+
     private void ensureReviewerValid(Reviewer reviewer, String password) throws Exception {
         if (!reviewer.verifyPass(password)) {
             throw new Exception(this.MSG_ON_INVALID_REVIEWER);
@@ -253,6 +257,7 @@ abstract class Paper {
     /**
      * @throws Exception - if adding the new keyword would result in more keywords than MAX_KEYWORDS
      */
+
     private void addKeyword(String keyword) throws Exception {
         if (this.keywords.size() >= this.MAX_KEYWORDS) {
             throw new Exception("Не можем да добавим повече от " + this.MAX_KEYWORDS + " keywords");
@@ -286,9 +291,6 @@ class SoloPaper extends Paper {
     }
 }
 
-/**
- * статия в колектив
- */
 class CollaborativePaper extends Paper {
 
     // map b/w indeces of authors in this.authors and their contribution
