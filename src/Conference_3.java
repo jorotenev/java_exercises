@@ -22,16 +22,12 @@ public class Conference_3 {
         Author author_1 = new Person("Avtorut Ivan", "address", "phone");
         Author author_2 = new Person("Avtorut Boris", "address", "phone");
 
-        Organiser organiser_and_reviewer = null;
-
-
-        organiser_and_reviewer = new Organiser("Organizatorut Todor", "address", "phone", "pass");
+        Organiser organiser_and_reviewer = new Organiser("Organizatorut Todor", "address", "phone", "pass");
         Organiser organiser_and_author_3 = new Organiser("Organizatorut Ignat", "address", "phone");
 
         // make a solo paper; add a reviewer and the same reviewer accepts the article
-        Paper paper_1 = null;
         try {
-            paper_1 = new SoloPaper("Name of paper #1", "annotation", new String[]{"k1", "k2"},
+            Paper paper_1 = new SoloPaper("Name of paper #1", "annotation", new String[]{"k1", "k2"},
                     "text", organiser_and_author_3);
             paper_1.changeStatus(organiser_and_reviewer, "pass");
             paper_1.changeStatus(organiser_and_reviewer, "pass", Status.readyAccepted);
