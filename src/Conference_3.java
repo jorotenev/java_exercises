@@ -1,34 +1,71 @@
+/**
+ * В това решение имаме клас Person. Той имплементира интерфейса Author (т.е всеки човек може да е автор).
+ * Специализация на класа Person e класът Organiser, който име два конструктора - с парола или без парола.
+ * Класа Organiser имплементира интерфейса Reviewer (т.е. организаторите могат да са рецензенти).
+ * <p>
+ * Тази организация позволява:
+ * - всеки човек да може да е автор
+ * - организаторите, понеже са хора, също да могат да са автори
+ * - организаторите, понеже са рецензенти(имплементира Reviewer), да могат да рецензират статии
+ * <p>
+ * Недостатъци на това решение:
+ * - По този начин всички хора са автори
+ */
+
+import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
 
 public class Conference_3 {
     public static void main(String... args) {
-        Person guest_1 = new Person("Ivan", "address", "phone", new Role[]{Role.guest});
-        Person guest_2 = new Person("Pesho", "address", "phone", new Role[]{Role.guest});
+        Person guest_1 = new Person("Ivan", "address", "phone");
+        Person guest_2 = new Person("Pesho", "address", "phone");
 
-        Author author_1 = new Person("Avtorut Ivan", "address", "phone", new Role[]{Role.author});
-        Author author_2 = new Person("Avtorut Boris", "address", "phone", new Role[]{Role.author});
+        Author author_1 = new Person("Avtorut Ivan", "address", "phone");
+        Author author_2 = new Person("Avtorut Boris", "address", "phone");
 
-        Organiser organiser_1 = new Organiser("Organizatorut Georgi", "address", "phone", new Role[]{Role.organiser});
-        Organiser organiser_2 = null;
+        Organiser organiser_and_reviewer = null;
 
+
+        organiser_and_reviewer = new Organiser("Organizatorut Todor", "address", "phone", "pass");
+        Organiser organiser_and_author_3 = new Organiser("Organizatorut Ignat", "address", "phone");
+
+        // правим solo paper добавяме reviewer, и същият reviewer одобрява статията
+        Paper paper_1 = null;
         try {
-            organiser_2 = new Organiser("Organizatorut Todor", "address", "phone", new Role[]{Role.organiser, Role.reviewer}, "pass");
-            Organiser organiser_3 = new Organiser("Organizatorut Ignat", "address", "phone", new Role[]{Role.organiser, Role.author});
-            Paper paper_1 = new SoloPaper("Name of paper #1", "annotation", new String[]{"k1", "k2"},
-                    "text", organiser_3);
-            // добавяме нов reviewer
-            paper_1.changeStatus(organiser_2, "pass");
-            // сменяме статуса на одобрен
-            paper_1.changeStatus(organiser_2, "pass", Status.readyAccepted);
-            Paper paper_2 = new CollaborativePaper("Name paper #2", "annotation", new String[]{"k"},
-                    "text", new Author[]{organiser_3, author_1}, new Integer[]{50, 50});
-
-            paper_2.changeStatus(organiser_2, "pass");
-            paper_2.changeStatus(organiser_3, "pass", Status.readyAccepted);
-            System.err.println("НЕ ТРЯБВА ДА СТИГНЕМ ДО ТОЗИ РЕД");
+            paper_1 = new SoloPaper("Name of paper #1", "annotation", new String[]{"k1", "k2"},
+                    "text", organiser_and_author_3);
+            paper_1.changeStatus(organiser_and_reviewer, "pass");
+            paper_1.changeStatus(organiser_and_reviewer, "pass", Status.readyAccepted);
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        // правима колективна публикация
+        Paper paper_2 = null;
+        try {
+            // сменяме статуса на одобрен
+            paper_2 = new CollaborativePaper("Name paper #2", "annotation", new String[]{"k"},
+                    "text", new Author[]{organiser_and_author_3, author_1, author_2}, new Integer[]{50, 30, 20});
+            // добавяме организатор като reviewer (ок, защото не е същия като авторите)
+            paper_2.changeStatus(organiser_and_reviewer, "pass");
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        try {
+            // сега опитваме да добавим организатора-автор също и като reviewer на публикацията си - не трябва да се получи
+            paper_2.changeStatus(organiser_and_author_3, "pass", Status.readyAccepted);
+            throw new InvalidStateException("Не трябва да е възможно организатор да бъде редактор на своя статия.");
+        } catch (Exception e) {
+            if (e.getMessage().equals(Paper.MSG_ON_INVALID_REVIEWER)) {  // очаквана грешка
+                System.out.println("както се очаква, организатор не може да редактира своя статия");
+            } else {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
         }
     }
 }
@@ -56,11 +93,9 @@ interface Author {
     void decrementNumberOfPublications();
 }
 
-
 interface Reviewer {
     public Boolean verifyPass(String p);
 }
-
 
 class Person implements Author {
     private String name;
@@ -70,15 +105,10 @@ class Person implements Author {
     private int numberOfPublications;
 
 
-    // даден човек може да има повече от една роля
-    private Set<Role> roles = new HashSet<>();
-
-    public Person(String n, String a, String p, Role[] roles) {
+    public Person(String n, String a, String p) {
         this.name = n;
         this.address = a;
         this.phone = p;
-
-        Collections.addAll(this.roles, roles);
     }
 
 
@@ -94,14 +124,6 @@ class Person implements Author {
         return this.phone;
     }
 
-    public Role[] getRoles() {
-        return this.roles.toArray(new Role[0]);
-    }
-
-    public Boolean hasRole(Role r) {
-        return this.roles.contains(r);
-    }
-
     @Override
     public int getNumberPublications() {
         return this.numberOfPublications;
@@ -114,7 +136,7 @@ class Person implements Author {
 
     @Override
     public void decrementNumberOfPublications() {
-        this.numberOfPublications = this.numberOfPublications <= 0 ? 0 : this.numberOfPublications--;
+        this.numberOfPublications = this.numberOfPublications <= 0 ? 0 : this.numberOfPublications - 1; // can't fall below 0
     }
 }
 
@@ -122,22 +144,13 @@ class Person implements Author {
 class Organiser extends Person implements Reviewer {
     private String password;
 
-    public Organiser(String n, String a, String p, Role[] roles) {
-        super(n, a, p, roles);
+    public Organiser(String n, String a, String p) {
+        super(n, a, p);
     }
 
-    public Organiser(String n, String a, String p, Role[] roles, String password) throws Exception {
-        this(n, a, p, roles); // call the other constructor
-
-        if (this.hasRole(Role.guest) && this.hasRole(Role.organiser)) {
-            throw new Exception("Nonsensical to be both an organiser and a guest");
-        }
-
-        if (!this.hasRole(Role.organiser)) {
-            throw new Exception("Organisers that are not reviewers don't need to have a password");
-        } else {
-            this.password = password;
-        }
+    public Organiser(String n, String a, String p, String password) {
+        this(n, a, p); // call the other constructor
+        this.password = password;
     }
 
     @Override
@@ -149,6 +162,7 @@ class Organiser extends Person implements Reviewer {
 
 // abstract just so that we enforce instantiating only objects of type SoloPaper or CollaborativePaper
 abstract class Paper {
+
     private String name;
     private String annotation;
     private ArrayList<String> keywords = new ArrayList<>(); // array-like, но няма нужда да обявяваме предварително колко елемента ще има
@@ -159,6 +173,7 @@ abstract class Paper {
     private Set<Reviewer> reviewers = new HashSet<>();
 
     private final int MAX_KEYWORDS = 4;
+    public static final String MSG_ON_INVALID_REVIEWER = "The reviewer doesn't have permissions to change the status";
 
     public Paper(String name, String annotation, String[] keywords, String text) throws Exception {
         this.name = name;
@@ -174,13 +189,6 @@ abstract class Paper {
         return this.authors.get(0);
     }
 
-    public void ensureReviewerNotAuthor(Reviewer reviewer) throws Exception {
-        for (Author a : this.authors) {
-            if (a.equals(reviewer)) {
-                throw new Exception("The reviewer is the same as the author!");
-            }
-        }
-    }
 
     public Status getStatus() {
         return this.status;
@@ -201,7 +209,7 @@ abstract class Paper {
         }
         this.status = st;
 
-        System.out.println("Status changed of: \n" + this.toString());
+        System.out.println("The paper has new status:\n" + this.toString());
 
         if (this.status.equals(Status.readyAccepted)) {
             for (Author a : this.authors) {
@@ -211,28 +219,39 @@ abstract class Paper {
 
     }
 
+    // just adds a reviewer to the paper (without changing its status)
     public void changeStatus(Reviewer r, String password) throws Exception {
         this.ensureReviewerValid(r, password);
+        this.reviewers.add(r);
+
         if (this.status.equals(Status.newStatus)) {
             this.status = Status.processing;
             System.out.println(this.toString() + " is in processing");
         }
 
-        this.reviewers.add(r);
     }
 
+    /**
+     * Verifies the password and ensures the reviewer is not among the authors of the paper
+     */
     private void ensureReviewerValid(Reviewer reviewer, String password) throws Exception {
         if (!reviewer.verifyPass(password)) {
-            throw new Exception("The reviewer doesn't have permissions to change the status");
+            throw new Exception(this.MSG_ON_INVALID_REVIEWER);
         }
         this.ensureReviewerNotAuthor(reviewer);
 
     }
 
+    private void ensureReviewerNotAuthor(Reviewer reviewer) throws Exception {
+        for (Author a : this.authors) {
+            if (a.equals(reviewer)) {
+                throw new Exception("The reviewer is the same as the author!");
+            }
+        }
+    }
 
     /**
-     * @param keyword
-     * @throws Exception - if there are more keywords than MAX_KEYWORDS
+     * @throws Exception - if adding the new keyword would result in more keywords than MAX_KEYWORDS
      */
     private void addKeyword(String keyword) throws Exception {
         if (this.keywords.size() >= this.MAX_KEYWORDS) {
@@ -261,7 +280,6 @@ abstract class Paper {
 
 class SoloPaper extends Paper {
 
-
     public SoloPaper(String name, String annotation, String[] keywords, String text, Author author) throws Exception {
         super(name, annotation, keywords, text);
         this.authors.add(author);
@@ -274,7 +292,7 @@ class SoloPaper extends Paper {
 class CollaborativePaper extends Paper {
 
     // map b/w indeces of authors in this.authors and their contribution
-    HashMap<Integer, Integer> contribution = new HashMap<>();
+    private HashMap<Integer, Integer> contribution = new HashMap<>();
 
     public CollaborativePaper(String name, String annotation, String[] keywords, String text, Author[] authors,
                               Integer[] authorContributions) throws Exception {
