@@ -1,4 +1,4 @@
-/**
+/*
  * В това решение имаме клас Person. Той имплементира интерфейса Author (т.е всеки човек може да е автор).
  * Специализация на класа Person e класът Organiser, който име два конструктора - с парола или без парола.
  * Класа Organiser имплементира интерфейса Reviewer (т.е. организаторите могат да са рецензенти).
@@ -11,9 +11,6 @@
  * Недостатъци на това решение:
  * - По този начин всички хора са автори
  */
-
-
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
 
@@ -69,13 +66,6 @@ public class Conference_3 {
             }
         }
     }
-}
-
-enum Role {
-    guest,
-    author,
-    reviewer,
-    organiser,
 }
 
 enum Status {
