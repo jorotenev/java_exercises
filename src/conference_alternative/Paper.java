@@ -1,9 +1,7 @@
-package conference;
+package conference_alternative;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 // abstract just so that we enforce instantiating only objects of type conference.SoloPaper or conference.CollaborativePaper
 abstract class Paper {
@@ -14,7 +12,7 @@ abstract class Paper {
     private String text;
     private Status status = Status.newStatus;
 
-    protected List<Author> authors = new ArrayList<>();
+    protected List<Authorship> authors = new ArrayList<>();
     private List<Reviewer> reviewers = new ArrayList<>();
 
     private final int MAX_KEYWORDS = 4;
@@ -30,7 +28,7 @@ abstract class Paper {
         this.text = text;
     }
 
-    public Author getAuthor() {
+    public Authorship getAuthor() {
         return this.authors.get(0);
     }
 
@@ -48,7 +46,7 @@ abstract class Paper {
         changeStatus(reviewer, password);
 
         if (this.status.equals(Status.readyAccepted) && !st.equals(Status.readyAccepted)) {
-            for (Author a : this.authors) {
+            for (Authorship a : this.authors) {
                 a.decrementNumberOfPublications();
             }
         }
@@ -57,7 +55,7 @@ abstract class Paper {
         System.out.println("The paper has new status:\n" + this.toString());
 
         if (this.status.equals(Status.readyAccepted)) {
-            for (Author a : this.authors) {
+            for (Authorship a : this.authors) {
                 a.incrementNumberPublications();
             }
         }
@@ -83,14 +81,14 @@ abstract class Paper {
 
     private void ensureReviewerValid(Reviewer reviewer, String password) throws Exception {
         if (!reviewer.verifyPass(password)) {
-            throw new Exception(this.MSG_ON_INVALID_REVIEWER);
+            throw new Exception(Paper.MSG_ON_INVALID_REVIEWER);
         }
         this.ensureReviewerNotAuthor(reviewer);
 
     }
 
     private void ensureReviewerNotAuthor(Reviewer reviewer) throws Exception {
-        for (Author a : this.authors) {
+        for (Authorship a : this.authors) {
             if (a.equals(reviewer)) {
                 throw new Exception("The reviewer is the same as the author!");
             }
@@ -112,9 +110,8 @@ abstract class Paper {
     @Override
     public String toString() {
         String authors = "";
-        for (Author a : this.authors) {
-            Person p = (Person) a; // TODO
-            authors += p.getName() + ", ";
+        for (Authorship a : this.authors) {
+            authors += a.getName() + ", ";
         }
         String reviewers = "";
         for (Reviewer p : this.reviewers) {

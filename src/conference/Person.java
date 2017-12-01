@@ -1,7 +1,7 @@
 package conference;
 
 /**
- * всеки човек може да е  автор
+ * всеки човек може да е автор
  */
 class Person implements Author {
     private String name;

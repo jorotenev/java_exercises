@@ -1,4 +1,4 @@
-package conference;
+package conference_alternative;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,7 +10,7 @@ class CollaborativePaper extends Paper {
     // map b/w indices of authors in this.authors and their authorContributions
     private Map<Integer, Integer> authorContributions = new HashMap<>();
 
-    public CollaborativePaper(String name, String annotation, String[] keywords, String text, Author[] authors,
+    public CollaborativePaper(String name, String annotation, String[] keywords, String text, Authorship[] authors,
                               Integer[] authorContributions) throws Exception {
         super(name, annotation, keywords, text);
         if (authors.length != authorContributions.length) {
@@ -29,7 +29,7 @@ class CollaborativePaper extends Paper {
         }
     }
 
-    public Author getAuthor(int i) {
+    public Authorship getAuthor(int i) {
         return this.authors.get(i);
     }
 

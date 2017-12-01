@@ -1,25 +1,23 @@
-package conference;
+package conference_alternative;
 /*
- * В това решение имаме клас conference.Person. Той имплементира интерфейса conference.Author (т.е всеки човек може да е автор).
- * Специализация на класа conference.Person e класът conference.Organiser, който име два конструктора - с парола или без парола.
- * Класа conference.Organiser имплементира интерфейса conference.Reviewer (т.е. организаторите могат да са рецензенти).
- * <p>
- * Тази организация na класовете и интерфейсите позволява:
- * - организаторите, понеже са хора, също да могат да са автори
- * - организаторите, понеже са рецензенти(имплементира conference.Reviewer), да могат да рецензират статии
- * <p>
- * Недостатъци на това решение:
- * - По този начин всички хора (Person) са автори
+ * В това решение отново имаме клас conference_alternative.Person (crf conference.Person).
+ * Този път имаме клас Authorship който наследява Person и съдържа методи и атрибути за човек който
+ * може да авторства.
+ * Authorship e наследен от Organiser и от Author - защото и организаторите и авторите могат да авторстват.
+ *
+ * Предимства на това решение:
+ * - не всеки човек е автор (за разлика от решението в conference пакета).
+ *
  */
 
 
-public class Conference_3 {
+public class Conference_3_alternative {
     public static void main(String... args) {
-        Person guest_1 = new Guest("Ivan", "address", "phone");
-        Person guest_2 = new Guest("Pesho", "address", "phone");
+        Guest guest_1 = new Guest("Ivan", "address", "phone");
+        Guest guest_2 = new Guest("Pesho", "address", "phone");
 
-        Person author_1 = new Person("Avtorut Ivan", "address", "phone");
-        Person author_2 = new Person("Avtorut Boris", "address", "phone");
+        Author author_1 = new Author("Avtorut Ivan", "address", "phone");
+        Author author_2 = new Author("Avtorut Boris", "address", "phone");
 
         Organiser organiser_and_reviewer = new Organiser("Organizatorut Todor", "address", "phone", "pass");
         Organiser organiser_and_author_3 = new Organiser("Organizatorut Ignat", "address", "phone");
@@ -40,7 +38,7 @@ public class Conference_3 {
         try {
             // change stage to accepted
             paper_2 = new CollaborativePaper("Name paper #2", "annotation", new String[]{"k"},
-                    "text", new Author[]{organiser_and_author_3, author_1, author_2}, new Integer[]{50, 30, 20});
+                    "text", new Authorship[]{organiser_and_author_3, author_1, author_2}, new Integer[]{50, 30, 20});
             // add an organiser as a reviewer (ok, cuz he's not amongst the author)
             paper_2.changeStatus(organiser_and_reviewer, "pass");
         } catch (Exception e) {
