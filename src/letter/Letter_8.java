@@ -1,3 +1,5 @@
+package letter;
+
 import java.util.ArrayList;
 
 public class Letter_8 {
@@ -20,11 +22,14 @@ public class Letter_8 {
             dispatcher.Add(letter_1);
             dispatcher.Add(package_1);
         } catch (AddLetterException e) {
-            System.err.println("Letter with number " + letter_1.getLetterNumber() + " already exists");
+            System.err.println("letter.Letter with number " + letter_1.getLetterNumber() + " already exists");
         }
     }
 }
 
+interface A {
+    int a = 1;
+}
 
 class Letter {
     private String nameRecipient;
@@ -133,7 +138,7 @@ class Dispatcher {
 }
 
 class AddLetterException extends Exception {
-//    public AddLetterException(String msg) {
+//    public letter.AddLetterException(String msg) {
 //        super(msg);
 //    }
 }

@@ -1,3 +1,5 @@
+package auto_computer;
+
 public class AutoComputer_6 {
 }
 

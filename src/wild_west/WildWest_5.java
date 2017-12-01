@@ -1,3 +1,5 @@
+package wild_west;
+
 import java.util.Random;
 
 public class WildWest_5 {

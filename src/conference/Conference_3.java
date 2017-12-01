@@ -1,12 +1,12 @@
-/*
- * В това решение имаме клас Person. Той имплементира интерфейса Author (т.е всеки човек може да е автор).
- * Специализация на класа Person e класът Organiser, който име два конструктора - с парола или без парола.
- * Класа Organiser имплементира интерфейса Reviewer (т.е. организаторите могат да са рецензенти).
+package conference;/*
+ * В това решение имаме клас conference.Person. Той имплементира интерфейса conference.Author (т.е всеки човек може да е автор).
+ * Специализация на класа conference.Person e класът conference.Organiser, който име два конструктора - с парола или без парола.
+ * Класа conference.Organiser имплементира интерфейса conference.Reviewer (т.е. организаторите могат да са рецензенти).
  * <p>
  * Тази организация позволява:
  * - всеки човек да може да е автор
  * - организаторите, понеже са хора, също да могат да са автори
- * - организаторите, понеже са рецензенти(имплементира Reviewer), да могат да рецензират статии
+ * - организаторите, понеже са рецензенти(имплементира conference.Reviewer), да могат да рецензират статии
  * <p>
  * Недостатъци на това решение:
  * - По този начин всички хора са автори
@@ -147,7 +147,7 @@ class Organiser extends Person implements Reviewer {
 }
 
 
-// abstract just so that we enforce instantiating only objects of type SoloPaper or CollaborativePaper
+// abstract just so that we enforce instantiating only objects of type conference.SoloPaper or conference.CollaborativePaper
 abstract class Paper {
 
     private String name;
@@ -177,8 +177,8 @@ abstract class Paper {
     }
 
 
-    public Status getStatus() {
-        return this.status;
+    public void getStatus() {
+        System.out.println(this.status);
     }
 
     /**
@@ -186,7 +186,6 @@ abstract class Paper {
      * Manages edges cases - if a paper is already accepted, and the new status is not accepted,
      * then reduce the number of publications of the authors.
      */
-
     public void changeStatus(Reviewer reviewer, String password, Status st) throws Exception {
         changeStatus(reviewer, password);
 
@@ -212,7 +211,7 @@ abstract class Paper {
         this.ensureReviewerValid(r, password);
         this.reviewers.add(r);
 
-        if (this.status.equals(Status.newStatus)) {
+        if (this.status.equals(Status.newStatus)) { // if that's the first reviewer, set the status to processing
             this.status = Status.processing;
             System.out.println(this.toString() + " is in processing");
         }
@@ -264,7 +263,7 @@ abstract class Paper {
             Person person = (Person) p; // TODO
             reviewers += person.getName() + ", ";
         }
-        return String.format("[%s] Title: %s | Author(s): [%s] | Reviewers: [%s]",
+        return String.format("[%s] Title: %s | conference.Author(s): [%s] | Reviewers: [%s]",
                 this.status.name(), this.name, authors, reviewers);
     }
 }

@@ -1,5 +1,5 @@
-/*
-* В условието се казва, че changeAmount() трябва да е private. Само че ако това е така - VIPAccount няма как да
+package bank;/*
+* В условието се казва, че changeAmount() трябва да е private. Само че ако това е така - bank.VIPAccount няма как да
 * имплементира reduceMoney() метода. Алтернативно amount може да стане protected. Предполагам е typo в условието.
 * */
 
@@ -117,7 +117,7 @@ class Customer {
         if (toBeDeleted != null) {
             this.accounts.remove(toBeDeleted);
         } else {
-            System.err.println("Customer doesn't have account with number " + accountNumber);
+            System.err.println("bank.Customer doesn't have account with number " + accountNumber);
         }
     }
 
